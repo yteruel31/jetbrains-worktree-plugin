@@ -1,0 +1,81 @@
+<idea-plugin>
+    <id>com.github.yoannteruel.jetbrainsworktreeplugin</id>
+    <name>Git Worktree Manager</name>
+    <vendor>Yoann Teruel</vendor>
+    <description><![CDATA[
+        Git worktree management for JetBrains IDEs.
+        Create, remove, open, lock/unlock, move worktrees and sync .idea settings — all from the IDE.
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>Git4Idea</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Services -->
+        <projectService
+                serviceImplementation="com.github.yoannteruel.jetbrainsworktreeplugin.services.GitWorktreeService"/>
+        <projectService
+                serviceImplementation="com.github.yoannteruel.jetbrainsworktreeplugin.services.IdeaSyncService"/>
+        <projectService
+                serviceImplementation="com.github.yoannteruel.jetbrainsworktreeplugin.settings.WorktreeSettingsService"/>
+
+        <!-- Tool Window -->
+        <toolWindow id="Git Worktrees"
+                    anchor="bottom"
+                    icon="AllIcons.Vcs.Branch"
+                    factoryClass="com.github.yoannteruel.jetbrainsworktreeplugin.ui.WorktreeToolWindowFactory"/>
+
+        <!-- Settings -->
+        <projectConfigurable
+                parentId="tools"
+                instance="com.github.yoannteruel.jetbrainsworktreeplugin.settings.WorktreeSettingsConfigurable"
+                id="com.github.yoannteruel.jetbrainsworktreeplugin.settings"
+                displayName="Git Worktree Manager"/>
+    </extensions>
+
+    <actions>
+        <group id="GitWorktree.ToolbarActions" text="Git Worktree Actions">
+            <action id="GitWorktree.Create"
+                    class="com.github.yoannteruel.jetbrainsworktreeplugin.actions.CreateWorktreeAction"
+                    text="Create Worktree"
+                    description="Create a new Git worktree"
+                    icon="AllIcons.General.Add"/>
+            <action id="GitWorktree.Remove"
+                    class="com.github.yoannteruel.jetbrainsworktreeplugin.actions.RemoveWorktreeAction"
+                    text="Remove Worktree"
+                    description="Remove the selected worktree"
+                    icon="AllIcons.General.Remove"/>
+            <action id="GitWorktree.Open"
+                    class="com.github.yoannteruel.jetbrainsworktreeplugin.actions.OpenWorktreeAction"
+                    text="Open in New Window"
+                    description="Open the selected worktree in a new IDE window"
+                    icon="AllIcons.Actions.OpenNewTab"/>
+            <action id="GitWorktree.Lock"
+                    class="com.github.yoannteruel.jetbrainsworktreeplugin.actions.LockWorktreeAction"
+                    text="Lock/Unlock Worktree"
+                    description="Toggle lock state of the selected worktree"
+                    icon="AllIcons.Diff.Lock"/>
+            <action id="GitWorktree.Move"
+                    class="com.github.yoannteruel.jetbrainsworktreeplugin.actions.MoveWorktreeAction"
+                    text="Move Worktree"
+                    description="Move the selected worktree to a new location"
+                    icon="AllIcons.Actions.Move"/>
+            <action id="GitWorktree.SyncIdea"
+                    class="com.github.yoannteruel.jetbrainsworktreeplugin.actions.SyncIdeaAction"
+                    text="Sync .idea Settings"
+                    description="Sync .idea directory from main worktree to all linked worktrees"
+                    icon="AllIcons.Actions.Refresh"/>
+            <action id="GitWorktree.Compare"
+                    class="com.github.yoannteruel.jetbrainsworktreeplugin.actions.CompareWorktreesAction"
+                    text="Compare Worktrees"
+                    description="Show a comparison of all worktrees"
+                    icon="AllIcons.Actions.Diff"/>
+            <separator/>
+            <action id="GitWorktree.Refresh"
+                    class="com.github.yoannteruel.jetbrainsworktreeplugin.actions.RefreshWorktreesAction"
+                    text="Refresh"
+                    description="Refresh the worktree list"
+                    icon="AllIcons.Actions.Refresh"/>
+        </group>
+    </actions>
+</idea-plugin>
