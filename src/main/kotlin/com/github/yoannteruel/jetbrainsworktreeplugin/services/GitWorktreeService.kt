@@ -49,12 +49,33 @@ class GitWorktreeService(private val project: Project) {
         fireWorktreeListChanged()
     }
 
-    fun removeWorktree(path: String, force: Boolean = false) {
+    fun removeWorktree(path: String, force: Boolean = false): Boolean {
         val args = mutableListOf("remove")
         if (force) args.add("--force")
         args.add(path)
-        runWorktreeCommand(*args.toTypedArray())
+        val result = runWorktreeCommand(*args.toTypedArray())
         fireWorktreeListChanged()
+        return result != null
+    }
+
+    fun deleteBranch(branchName: String): String? {
+        val root = findGitRoot() ?: return "Could not determine git root directory"
+        val gitExecutable = GitExecutableManager.getInstance().getPathToGit(project)
+        val cmd = GeneralCommandLine(gitExecutable, "branch", "-d", branchName)
+        cmd.withWorkDirectory(root.path)
+        return try {
+            val handler = CapturingProcessHandler(cmd)
+            val result = handler.runProcess(30_000)
+            if (result.exitCode == 0) {
+                null
+            } else {
+                LOG.warn("Failed to delete branch '$branchName': ${result.stderr}")
+                result.stderr.trim()
+            }
+        } catch (e: Exception) {
+            LOG.error("Failed to delete branch '$branchName'", e)
+            e.message ?: "Unknown error"
+        }
     }
 
     fun lockWorktree(path: String, reason: String?) {
