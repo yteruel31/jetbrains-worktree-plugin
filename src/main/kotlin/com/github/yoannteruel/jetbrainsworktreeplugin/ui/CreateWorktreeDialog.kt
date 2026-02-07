@@ -14,6 +14,7 @@ import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.columns
 import com.intellij.ui.dsl.builder.panel
+import com.intellij.openapi.ui.DialogPanel
 import javax.swing.JComponent
 
 class CreateWorktreeDialog(private val project: Project) : DialogWrapper(project) {
@@ -33,6 +34,7 @@ class CreateWorktreeDialog(private val project: Project) : DialogWrapper(project
     private var availableBranches: List<String> = emptyList()
     private var selectedExistingBranch: String = ""
     private var pathField: String = ""
+    private lateinit var dialogPanel: DialogPanel
 
     init {
         title = "Create Worktree"
@@ -48,7 +50,8 @@ class CreateWorktreeDialog(private val project: Project) : DialogWrapper(project
         init()
     }
 
-    override fun createCenterPanel(): JComponent = panel {
+    override fun createCenterPanel(): JComponent {
+        dialogPanel = panel {
         row("Worktree path:") {
             textFieldWithBrowseButton(
                 FileChooserDescriptorFactory.createSingleFolderDescriptor()
@@ -82,9 +85,12 @@ class CreateWorktreeDialog(private val project: Project) : DialogWrapper(project
                 .align(AlignX.FILL)
                 .onChanged { selectedExistingBranch = it.item as? String ?: "" }
         }.visibleIf(createNewBranchProperty.not())
+        }
+        return dialogPanel
     }
 
     override fun doValidate(): ValidationInfo? {
+        dialogPanel.apply()
         if (pathField.isBlank()) {
             return ValidationInfo("Worktree path must not be empty")
         }
@@ -98,6 +104,7 @@ class CreateWorktreeDialog(private val project: Project) : DialogWrapper(project
     }
 
     override fun doOKAction() {
+        dialogPanel.apply()
         createNewBranch = createNewBranchProperty.get()
         worktreePath = pathField
         if (!createNewBranch) {
