@@ -8,9 +8,6 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.util.messages.Topic
-import git4idea.commands.Git
-import git4idea.commands.GitCommand
-import git4idea.commands.GitLineHandler
 import git4idea.config.GitExecutableManager
 import git4idea.repo.GitRepositoryManager
 
@@ -82,11 +79,21 @@ class GitWorktreeService(private val project: Project) {
 
     fun getAvailableBranches(): List<String> {
         val root = findGitRoot() ?: return emptyList()
-        val handler = GitLineHandler(project, root, GitCommand.BRANCH)
-        handler.addParameters("--list", "--format=%(refname:short)")
-        val result = Git.getInstance().runCommand(handler)
-        if (!result.success()) return emptyList()
-        return result.output.filter { it.isNotBlank() }
+        val gitExecutable = GitExecutableManager.getInstance().getPathToGit(project)
+        val cmd = GeneralCommandLine(gitExecutable, "branch", "--list", "--format=%(refname:short)")
+        cmd.withWorkDirectory(root.path)
+        return try {
+            val handler = CapturingProcessHandler(cmd)
+            val result = handler.runProcess(30_000)
+            if (result.exitCode == 0) {
+                result.stdout.lines().filter { it.isNotBlank() }
+            } else {
+                emptyList()
+            }
+        } catch (e: Exception) {
+            LOG.warn("Failed to list branches", e)
+            emptyList()
+        }
     }
 
     internal fun parseWorktreeListOutput(lines: List<String>): List<WorktreeInfo> {
