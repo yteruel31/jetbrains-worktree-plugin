@@ -5,6 +5,7 @@ build/
 
 # IntelliJ (keep project-level settings, ignore volatile files)
 .idea/workspace.xml
+.idea/vcs.xml
 .idea/shelf/
 .idea/dataSources/
 .idea/httpRequests/
