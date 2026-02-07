@@ -25,6 +25,14 @@
                     icon="AllIcons.Vcs.Branch"
                     factoryClass="com.github.yoannteruel.jetbrainsworktreeplugin.ui.WorktreeToolWindowFactory"/>
 
+        <!-- Title bar decoration -->
+        <frameTitleBuilder
+                implementation="com.github.yoannteruel.jetbrainsworktreeplugin.ui.WorktreeFrameTitleBuilder"/>
+
+        <!-- Project tree decoration -->
+        <projectViewNodeDecorator
+                implementation="com.github.yoannteruel.jetbrainsworktreeplugin.ui.WorktreeProjectViewDecorator"/>
+
         <!-- Settings -->
         <projectConfigurable
                 parentId="tools"
@@ -59,7 +67,7 @@
                     class="com.github.yoannteruel.jetbrainsworktreeplugin.actions.MoveWorktreeAction"
                     text="Move Worktree"
                     description="Move the selected worktree to a new location"
-                    icon="AllIcons.Actions.MoveTo"/>
+                    icon="AllIcons.Actions.Move"/>
             <action id="GitWorktree.SyncIdea"
                     class="com.github.yoannteruel.jetbrainsworktreeplugin.actions.SyncIdeaAction"
                     text="Sync .idea Settings"
@@ -70,6 +78,11 @@
                     text="Compare Worktrees"
                     description="Show a comparison of all worktrees"
                     icon="AllIcons.Actions.Diff"/>
+            <action id="GitWorktree.CheckoutPR"
+                    class="com.github.yoannteruel.jetbrainsworktreeplugin.actions.CheckoutPullRequestAction"
+                    text="Checkout Pull Request"
+                    description="Create a worktree from a pull/merge request"
+                    icon="AllIcons.Vcs.Fetch"/>
             <separator/>
             <action id="GitWorktree.Refresh"
                     class="com.github.yoannteruel.jetbrainsworktreeplugin.actions.RefreshWorktreesAction"
@@ -77,5 +90,13 @@
                     description="Refresh the worktree list"
                     icon="AllIcons.Actions.Refresh"/>
         </group>
+        <!-- VCS Log context menu -->
+        <action id="GitWorktree.CreateFromCommit"
+                class="com.github.yoannteruel.jetbrainsworktreeplugin.actions.CreateWorktreeFromCommitAction"
+                text="Create Worktree from Commit"
+                description="Create a new worktree checked out at this commit"
+                icon="AllIcons.Vcs.Branch">
+            <add-to-group group-id="Vcs.Log.ContextMenu" anchor="last"/>
+        </action>
     </actions>
 </idea-plugin>

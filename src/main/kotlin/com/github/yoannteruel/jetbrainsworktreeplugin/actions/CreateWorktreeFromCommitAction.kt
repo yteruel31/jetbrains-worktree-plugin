@@ -3,31 +3,40 @@ package com.github.yoannteruel.jetbrainsworktreeplugin.actions
 import com.github.yoannteruel.jetbrainsworktreeplugin.services.GitWorktreeService
 import com.github.yoannteruel.jetbrainsworktreeplugin.services.IdeaSyncService
 import com.github.yoannteruel.jetbrainsworktreeplugin.settings.WorktreeSettingsService
-import com.github.yoannteruel.jetbrainsworktreeplugin.ui.CreateWorktreeDialog
+import com.github.yoannteruel.jetbrainsworktreeplugin.ui.CreateWorktreeFromCommitDialog
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
-import git4idea.repo.GitRepositoryManager
+import com.intellij.vcs.log.VcsLogDataKeys
 
-class CreateWorktreeAction : AnAction() {
+class CreateWorktreeFromCommitAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val dialog = CreateWorktreeDialog(project)
+        val selection = e.getData(VcsLogDataKeys.VCS_LOG_COMMIT_SELECTION) ?: return
+        val commits = selection.commits
+        if (commits.isEmpty()) return
+
+        val commitHash = commits.first().hash.asString()
+
+        val dialog = CreateWorktreeFromCommitDialog(project, commitHash)
         if (!dialog.showAndGet()) return
 
         val path = dialog.worktreePath
-        val branch = dialog.branchName
         val createNew = dialog.createNewBranch
-        val base = dialog.baseBranch
+        val branch = dialog.branchName
 
         ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Creating worktree...", false) {
             override fun run(indicator: ProgressIndicator) {
                 val service = GitWorktreeService.getInstance(project)
-                service.addWorktree(path, branch, createNew, base)
+                if (createNew && branch.isNotBlank()) {
+                    service.addWorktree(path, branch, true, commitHash)
+                } else {
+                    service.addWorktree(path, commitHash, false, null)
+                }
 
                 val settings = WorktreeSettingsService.getInstance(project)
                 if (settings.state.autoSyncIdea) {
@@ -44,10 +53,11 @@ class CreateWorktreeAction : AnAction() {
     }
 
     override fun update(e: AnActionEvent) {
-        val project = e.project
-        e.presentation.isEnabled = project != null &&
-                GitRepositoryManager.getInstance(project).repositories.isNotEmpty()
+        val selection = e.getData(VcsLogDataKeys.VCS_LOG_COMMIT_SELECTION)
+        e.presentation.isEnabledAndVisible = e.project != null &&
+                selection != null &&
+                selection.commits.isNotEmpty()
     }
 
-    override fun getActionUpdateThread() = com.intellij.openapi.actionSystem.ActionUpdateThread.BGT
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 }

@@ -96,6 +96,80 @@ class GitWorktreeService(private val project: Project) {
         }
     }
 
+    fun runPostCreationCommand(worktreePath: String, command: String) {
+        val tokens = com.intellij.util.execution.ParametersListUtil.parse(command)
+        if (tokens.isEmpty()) return
+        val cmd = GeneralCommandLine(tokens)
+        cmd.setWorkDirectory(worktreePath)
+        try {
+            val handler = CapturingProcessHandler(cmd)
+            val result = handler.runProcess(120_000)
+            if (result.exitCode != 0) {
+                LOG.warn("Post-creation command failed (exit ${result.exitCode}): ${result.stderr}")
+            }
+        } catch (e: Exception) {
+            LOG.error("Failed to execute post-creation command", e)
+        }
+    }
+
+    enum class RemoteProvider(val label: String) {
+        GITHUB("GitHub"),
+        GITLAB("GitLab"),
+        BITBUCKET("Bitbucket"),
+    }
+
+    fun detectRemoteProvider(): RemoteProvider? {
+        val root = findGitRoot() ?: return null
+        val gitExecutable = GitExecutableManager.getInstance().getPathToGit(project)
+        val cmd = GeneralCommandLine(gitExecutable, "remote", "get-url", "origin")
+        cmd.withWorkDirectory(root.path)
+        return try {
+            val handler = CapturingProcessHandler(cmd)
+            val result = handler.runProcess(10_000)
+            if (result.exitCode != 0) return null
+            val url = result.stdout.trim()
+            when {
+                url.contains("github.com", ignoreCase = true) -> RemoteProvider.GITHUB
+                url.contains("gitlab", ignoreCase = true) -> RemoteProvider.GITLAB
+                url.contains("bitbucket", ignoreCase = true) -> RemoteProvider.BITBUCKET
+                else -> null
+            }
+        } catch (e: Exception) {
+            LOG.warn("Failed to detect remote provider", e)
+            null
+        }
+    }
+
+    /**
+     * Fetches a pull/merge request branch from the remote and returns the local branch name.
+     */
+    fun fetchPullRequest(prNumber: Int, provider: RemoteProvider): String? {
+        val root = findGitRoot() ?: return null
+        val gitExecutable = GitExecutableManager.getInstance().getPathToGit(project)
+
+        val (refSpec, localBranch) = when (provider) {
+            RemoteProvider.GITHUB -> "pull/$prNumber/head:pr-$prNumber" to "pr-$prNumber"
+            RemoteProvider.GITLAB -> "merge-requests/$prNumber/head:mr-$prNumber" to "mr-$prNumber"
+            RemoteProvider.BITBUCKET -> "pull-requests/$prNumber/from:pr-$prNumber" to "pr-$prNumber"
+        }
+
+        val cmd = GeneralCommandLine(gitExecutable, "fetch", "origin", refSpec)
+        cmd.withWorkDirectory(root.path)
+        return try {
+            val handler = CapturingProcessHandler(cmd)
+            val result = handler.runProcess(60_000)
+            if (result.exitCode == 0) {
+                localBranch
+            } else {
+                LOG.warn("Failed to fetch PR #$prNumber: ${result.stderr}")
+                null
+            }
+        } catch (e: Exception) {
+            LOG.error("Failed to fetch pull request", e)
+            null
+        }
+    }
+
     internal fun parseWorktreeListOutput(lines: List<String>): List<WorktreeInfo> {
         val worktrees = mutableListOf<WorktreeInfo>()
         var currentPath: String? = null

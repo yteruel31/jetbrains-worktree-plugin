@@ -1,6 +1,7 @@
 package com.github.yoannteruel.jetbrainsworktreeplugin.settings
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
+import com.intellij.openapi.observable.properties.PropertyGraph
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
 import com.intellij.ui.dsl.builder.bindSelected
@@ -18,8 +19,11 @@ class WorktreeSettingsConfigurable(private val project: Project) : Configurable 
 
     override fun getDisplayName(): String = "Git Worktree Manager"
 
+    private val propertyGraph = PropertyGraph()
+
     override fun createComponent(): JComponent {
         val state = settings.state
+        val hookEnabledProperty = propertyGraph.property(state.postCreationCommandEnabled)
         panel = panel {
             group("General") {
                 row("Default worktree directory:") {
@@ -36,6 +40,14 @@ class WorktreeSettingsConfigurable(private val project: Project) : Configurable 
                 row {
                     checkBox("Auto-sync .idea on worktree creation")
                         .bindSelected(state::autoSyncIdea)
+                }
+                row {
+                    checkBox("Show worktree branch in window title")
+                        .bindSelected(state::showWorktreeInTitle)
+                }
+                row {
+                    checkBox("Open worktrees in new window")
+                        .bindSelected(state::openWorktreeInNewWindow)
                 }
             }
             group(".idea Sync Exclusions") {
@@ -61,6 +73,24 @@ class WorktreeSettingsConfigurable(private val project: Project) : Configurable 
                             }
                         )
                 }
+            }
+            group("Post-Creation Hook") {
+                row {
+                    checkBox("Run command after worktree creation")
+                        .bindSelected(hookEnabledProperty)
+                        .onChanged { state.postCreationCommandEnabled = it.isSelected }
+                }
+                row("Command:") {
+                    textField()
+                        .columns(COLUMNS_LARGE)
+                        .bindText(
+                            getter = { state.postCreationCommand ?: "" },
+                            setter = { state.postCreationCommand = it.ifBlank { null } }
+                        )
+                }.visibleIf(hookEnabledProperty)
+                row {
+                    comment("Command runs in the new worktree directory (e.g. <code>npm install</code>, <code>mvn clean install</code>)")
+                }.visibleIf(hookEnabledProperty)
             }
         }
         return panel!!
