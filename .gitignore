@@ -21,5 +21,8 @@ Thumbs.db
 # IntelliJ Platform Gradle Plugin cache
 .intellijPlatform/
 
+# Kotlin compiler cache
+.kotlin/
+
 # Claude Code
 .claude/settings.local.json
