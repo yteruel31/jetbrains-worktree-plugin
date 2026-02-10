@@ -17,7 +17,7 @@ class WorktreeSettingsConfigurable(private val project: Project) : Configurable 
     private val settings get() = WorktreeSettingsService.getInstance(project)
     private var panel: com.intellij.openapi.ui.DialogPanel? = null
 
-    override fun getDisplayName(): String = "Git Worktree Manager"
+    override fun getDisplayName(): String = "Git Worktree Tool"
 
     private val propertyGraph = PropertyGraph()
 

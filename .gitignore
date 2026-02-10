@@ -24,5 +24,8 @@ Thumbs.db
 # Kotlin compiler cache
 .kotlin/
 
+# Plugin signing keys
+*.pem
+
 # Claude Code
 .claude/settings.local.json

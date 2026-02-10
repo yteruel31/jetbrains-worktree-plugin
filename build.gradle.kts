@@ -33,7 +33,7 @@ intellijPlatform {
 
     pluginConfiguration {
         id = "com.github.yoannteruel.jetbrainsworktreeplugin"
-        name = "Git Worktree Manager"
+        name = "Git Worktree Tool"
         version = project.version.toString()
         description = "Git worktree management for JetBrains IDEs"
         vendor {
@@ -44,6 +44,26 @@ intellijPlatform {
             sinceBuild = "251"
             untilBuild = provider { null }
         }
+
+        changeNotes = provider {
+            file("CHANGELOG.md").readText()
+        }
+    }
+
+    pluginVerification {
+        ides {
+            recommended()
+        }
+    }
+
+    signing {
+        certificateChain = providers.environmentVariable("CERTIFICATE_CHAIN")
+        privateKey = providers.environmentVariable("PRIVATE_KEY")
+        password = providers.environmentVariable("PRIVATE_KEY_PASSWORD")
+    }
+
+    publishing {
+        token = providers.environmentVariable("PUBLISH_TOKEN")
     }
 }
 

@@ -1,5 +1,5 @@
 name: Bug Report
-description: Report a bug in Git Worktree Manager
+description: Report a bug in Git Worktree Tool
 labels: ["bug"]
 body:
   - type: textarea

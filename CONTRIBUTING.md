@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in contributing to Git Worktree Manager!
+Thanks for your interest in contributing to Git Worktree Tool!
 
 ## Getting Started
 

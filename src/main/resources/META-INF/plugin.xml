@@ -1,6 +1,6 @@
 <idea-plugin>
     <id>com.github.yoannteruel.jetbrainsworktreeplugin</id>
-    <name>Git Worktree Manager</name>
+    <name>Git Worktree Tool</name>
     <vendor>Yoann Teruel</vendor>
     <description><![CDATA[
         Git worktree management for JetBrains IDEs.
@@ -38,7 +38,7 @@
                 parentId="tools"
                 instance="com.github.yoannteruel.jetbrainsworktreeplugin.settings.WorktreeSettingsConfigurable"
                 id="com.github.yoannteruel.jetbrainsworktreeplugin.settings"
-                displayName="Git Worktree Manager"/>
+                displayName="Git Worktree Tool"/>
     </extensions>
 
     <actions>

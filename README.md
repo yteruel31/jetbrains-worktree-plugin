@@ -1,4 +1,4 @@
-# Git Worktree Manager
+# Git Worktree Tool
 
 JetBrains IDE plugin for Git worktree management. Create, remove, open, lock/unlock, move worktrees and sync `.idea` settings — all from the IDE.
 
@@ -21,9 +21,11 @@ JetBrains IDE plugin for Git worktree management. Create, remove, open, lock/unl
 
 ### From JetBrains Marketplace
 
-> Coming soon
+1. Open your IDE and go to **Settings > Plugins > Marketplace**
+2. Search for **"Git Worktree Tool"**
+3. Click **Install** and restart the IDE
 
-### Manual
+### From Disk
 
 1. Download the latest release from [Releases](https://github.com/yteruel31/jetbrains-worktree-plugin/releases)
 2. In your IDE, go to **Settings > Plugins > Install Plugin from Disk...**
@@ -33,7 +35,7 @@ JetBrains IDE plugin for Git worktree management. Create, remove, open, lock/unl
 
 After installation, a **Git Worktrees** tool window appears in the bottom panel. From there you can manage all your worktrees.
 
-Configure the plugin under **Settings > Tools > Git Worktree Manager**.
+Configure the plugin under **Settings > Tools > Git Worktree Tool**.
 
 ## Building from Source
 
