@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Fixed
 
 - Fix deadlock caused by synchronous git process execution under ReadAction in project view decorator and frame title builder
+- Fix invalid icon reference (`AllIcons.Actions.Move`) causing `PluginException` on Move Worktree action
 
 ## [0.1.0] - 2025-02-09
 
