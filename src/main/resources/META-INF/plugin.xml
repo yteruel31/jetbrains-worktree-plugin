@@ -33,6 +33,10 @@
         <projectViewNodeDecorator
                 implementation="com.github.yoannteruel.jetbrainsworktreeplugin.ui.WorktreeProjectViewDecorator"/>
 
+        <!-- Startup -->
+        <postStartupActivity
+                implementation="com.github.yoannteruel.jetbrainsworktreeplugin.services.WorktreeCacheStartupActivity"/>
+
         <!-- Settings -->
         <projectConfigurable
                 parentId="tools"

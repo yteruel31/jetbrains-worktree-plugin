@@ -19,11 +19,7 @@ class WorktreeFrameTitleBuilder : FrameTitleBuilder() {
         }
 
         val worktreeService = GitWorktreeService.getInstance(project)
-        val worktrees = try {
-            worktreeService.listWorktrees()
-        } catch (_: Exception) {
-            return defaultTitle
-        }
+        val worktrees = worktreeService.getCachedWorktrees()
 
         if (worktrees.size <= 1) return defaultTitle
 

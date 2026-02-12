@@ -17,11 +17,7 @@ class WorktreeProjectViewDecorator(private val project: Project) : ProjectViewNo
         if (dir.path != projectPath) return
 
         val worktreeService = GitWorktreeService.getInstance(project)
-        val worktrees = try {
-            worktreeService.listWorktrees()
-        } catch (_: Exception) {
-            return
-        }
+        val worktrees = worktreeService.getCachedWorktrees()
 
         if (worktrees.size <= 1) return
 

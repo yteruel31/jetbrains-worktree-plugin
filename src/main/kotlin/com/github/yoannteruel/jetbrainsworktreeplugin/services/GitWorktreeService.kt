@@ -3,6 +3,7 @@ package com.github.yoannteruel.jetbrainsworktreeplugin.services
 import com.github.yoannteruel.jetbrainsworktreeplugin.model.WorktreeInfo
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.CapturingProcessHandler
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
@@ -27,6 +28,19 @@ class GitWorktreeService(private val project: Project) {
         )
 
         fun getInstance(project: Project): GitWorktreeService = project.service()
+    }
+
+    @Volatile
+    private var cachedWorktrees: List<WorktreeInfo> = emptyList()
+
+    fun getCachedWorktrees(): List<WorktreeInfo> = cachedWorktrees
+
+    fun refreshCacheAsync() {
+        ApplicationManager.getApplication().executeOnPooledThread {
+            val worktrees = listWorktrees()
+            cachedWorktrees = worktrees
+            project.messageBus.syncPublisher(TOPIC).worktreeListChanged()
+        }
     }
 
     fun listWorktrees(): List<WorktreeInfo> {
@@ -272,6 +286,6 @@ class GitWorktreeService(private val project: Project) {
     }
 
     private fun fireWorktreeListChanged() {
-        project.messageBus.syncPublisher(TOPIC).worktreeListChanged()
+        refreshCacheAsync()
     }
 }
