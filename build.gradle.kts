@@ -2,6 +2,7 @@ plugins {
     id("java")
     kotlin("jvm") version "2.2.0"
     id("org.jetbrains.intellij.platform")
+    id("org.jetbrains.changelog") version "2.5.0"
 }
 
 group = "com.github.yoannteruel"
@@ -9,6 +10,11 @@ version = providers.gradleProperty("pluginVersion").get()
 
 kotlin {
     jvmToolchain(21)
+}
+
+changelog {
+    version.set(providers.gradleProperty("pluginVersion"))
+    path.set(file("CHANGELOG.md").canonicalPath)
 }
 
 dependencies {
@@ -46,7 +52,10 @@ intellijPlatform {
         }
 
         changeNotes = provider {
-            file("CHANGELOG.md").readText()
+            changelog.renderItem(
+                changelog.get(providers.gradleProperty("pluginVersion").get()),
+                org.jetbrains.changelog.Changelog.OutputType.HTML
+            )
         }
     }
 
