@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- Replace worktree table with a tree view showing main worktree as root with linked worktrees nested underneath
 - Move worktree panel into the VCS tool window as a "Worktrees" tab next to the Log tab
 - Toolbar actions now displayed on the left side, matching the Log tab style
 
