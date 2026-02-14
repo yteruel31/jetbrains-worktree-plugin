@@ -73,7 +73,7 @@
                     class="com.github.yoannteruel.jetbrainsworktreeplugin.actions.MoveWorktreeAction"
                     text="Move Worktree"
                     description="Move the selected worktree to a new location"
-                    icon="AllIcons.Actions.MoveTo"/>
+                    icon="/icons/setCurrentDirectory.svg"/>
             <action id="GitWorktree.SyncIdea"
                     class="com.github.yoannteruel.jetbrainsworktreeplugin.actions.SyncIdeaAction"
                     text="Sync .idea Settings"

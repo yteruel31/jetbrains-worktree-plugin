@@ -12,6 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - Move worktree panel into the VCS tool window as a "Worktrees" tab next to the Log tab
 - Toolbar actions now displayed on the left side, matching the Log tab style
 
+### Fixed
+
+- Fix invalid icon reference (`AllIcons.Actions.MoveTo`) on Move Worktree action by using a custom SVG icon
+- Fix synchronous git execution on EDT in Compare Worktrees and Sync .idea actions
+
 ## [0.2.0] - 2026-02-14
 
 ### Added

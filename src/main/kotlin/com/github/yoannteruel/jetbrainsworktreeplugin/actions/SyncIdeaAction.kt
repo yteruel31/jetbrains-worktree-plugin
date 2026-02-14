@@ -4,6 +4,7 @@ import com.github.yoannteruel.jetbrainsworktreeplugin.services.GitWorktreeServic
 import com.github.yoannteruel.jetbrainsworktreeplugin.services.IdeaSyncService
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
@@ -13,26 +14,33 @@ class SyncIdeaAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val worktrees = GitWorktreeService.getInstance(project).listWorktrees()
-        val targets = worktrees.filter { !it.isMainWorktree }
 
-        if (targets.isEmpty()) {
-            Messages.showInfoMessage(project, "No linked worktrees to sync to.", "Sync .idea Settings")
-            return
-        }
-
-        val listing = targets.joinToString("\n") { "  - ${it.path}" }
-        val result = Messages.showYesNoDialog(
-            project,
-            "Sync .idea settings to the following worktrees?\n\n$listing",
-            "Sync .idea Settings",
-            Messages.getQuestionIcon()
-        )
-        if (result != Messages.YES) return
-
-        ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Syncing .idea settings...", false) {
+        ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Loading worktrees...", false) {
             override fun run(indicator: ProgressIndicator) {
-                IdeaSyncService.getInstance(project).syncToAllWorktrees()
+                val worktrees = GitWorktreeService.getInstance(project).listWorktrees()
+                val targets = worktrees.filter { !it.isMainWorktree }
+
+                ApplicationManager.getApplication().invokeLater {
+                    if (targets.isEmpty()) {
+                        Messages.showInfoMessage(project, "No linked worktrees to sync to.", "Sync .idea Settings")
+                        return@invokeLater
+                    }
+
+                    val listing = targets.joinToString("\n") { "  - ${it.path}" }
+                    val result = Messages.showYesNoDialog(
+                        project,
+                        "Sync .idea settings to the following worktrees?\n\n$listing",
+                        "Sync .idea Settings",
+                        Messages.getQuestionIcon()
+                    )
+                    if (result != Messages.YES) return@invokeLater
+
+                    ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Syncing .idea settings...", false) {
+                        override fun run(indicator: ProgressIndicator) {
+                            IdeaSyncService.getInstance(project).syncToAllWorktrees()
+                        }
+                    })
+                }
             }
         })
     }

@@ -4,6 +4,10 @@ import com.github.yoannteruel.jetbrainsworktreeplugin.model.WorktreeInfo
 import com.github.yoannteruel.jetbrainsworktreeplugin.services.GitWorktreeService
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.Task
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.table.JBTable
 import javax.swing.table.AbstractTableModel
@@ -12,19 +16,27 @@ class CompareWorktreesAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val worktrees = GitWorktreeService.getInstance(project).listWorktrees()
-        if (worktrees.isEmpty()) return
+        val dataContext = e.dataContext
 
-        val table = JBTable(WorktreeCompareTableModel(worktrees))
-        table.setShowGrid(true)
+        ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Loading worktrees...", false) {
+            override fun run(indicator: ProgressIndicator) {
+                val worktrees = GitWorktreeService.getInstance(project).listWorktrees()
+                if (worktrees.isEmpty()) return
 
-        JBPopupFactory.getInstance()
-            .createComponentPopupBuilder(table, null)
-            .setTitle("Compare Worktrees")
-            .setResizable(true)
-            .setMovable(true)
-            .createPopup()
-            .showInBestPositionFor(e.dataContext)
+                ApplicationManager.getApplication().invokeLater {
+                    val table = JBTable(WorktreeCompareTableModel(worktrees))
+                    table.setShowGrid(true)
+
+                    JBPopupFactory.getInstance()
+                        .createComponentPopupBuilder(table, null)
+                        .setTitle("Compare Worktrees")
+                        .setResizable(true)
+                        .setMovable(true)
+                        .createPopup()
+                        .showInBestPositionFor(dataContext)
+                }
+            }
+        })
     }
 
     override fun update(e: AnActionEvent) {
