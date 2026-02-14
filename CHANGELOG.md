@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.3.1] - 2026-02-14
+
+### Added
+
+- Built-in error reporting: unhandled exceptions show a "Report to Plugin Vendor" button that opens a pre-filled GitHub issue using the bug report template
+
 ## [0.3.0] - 2026-02-14
 
 ### Changed

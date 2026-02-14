@@ -45,6 +45,10 @@
                 instance="com.github.yoannteruel.jetbrainsworktreeplugin.settings.WorktreeSettingsConfigurable"
                 id="com.github.yoannteruel.jetbrainsworktreeplugin.settings"
                 displayName="Git Worktree Tool"/>
+
+        <!-- Error reporting -->
+        <errorHandler
+                implementation="com.github.yoannteruel.jetbrainsworktreeplugin.GitWorktreeErrorReportSubmitter"/>
     </extensions>
 
     <actions>
