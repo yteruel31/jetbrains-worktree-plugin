@@ -3,8 +3,8 @@ package com.github.yoannteruel.jetbrainsworktreeplugin.ui
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.ui.ValidationInfo
-import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.builder.columns
 import com.intellij.ui.dsl.builder.AlignX
@@ -19,7 +19,7 @@ class MoveWorktreeDialog(
     var newPath: String = ""
         private set
 
-    private var newPathField: String = ""
+    private lateinit var newPathComponent: TextFieldWithBrowseButton
 
     init {
         title = "Move Worktree"
@@ -43,26 +43,27 @@ class MoveWorktreeDialog(
                     .withTitle("Select New Location"),
                 project,
             ).columns(40)
-                .bindText(::newPathField)
                 .align(AlignX.FILL)
+                .applyToComponent { newPathComponent = this }
         }
     }
 
     override fun doValidate(): ValidationInfo? {
-        if (newPathField.isBlank()) {
+        val path = newPathComponent.text
+        if (path.isBlank()) {
             return ValidationInfo("New path must not be empty")
         }
-        if (newPathField == currentPath) {
+        if (path == currentPath) {
             return ValidationInfo("New path must be different from the current path")
         }
-        if (File(newPathField).exists()) {
+        if (File(path).exists()) {
             return ValidationInfo("The destination path already exists")
         }
         return null
     }
 
     override fun doOKAction() {
-        newPath = newPathField
+        newPath = newPathComponent.text
         super.doOKAction()
     }
 }

@@ -15,7 +15,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Fixed
 
 - Fix invalid icon reference (`AllIcons.Actions.MoveTo`) on Move Worktree action by using a custom SVG icon
-- Fix synchronous git execution on EDT in Compare Worktrees and Sync .idea actions
+- Fix synchronous git execution on EDT in Compare Worktrees, Sync .idea, and Move Worktree actions
+- Fix Move Worktree dialog validation always rejecting input due to `bindText` not syncing before validation
 
 ## [0.2.0] - 2026-02-14
 

@@ -5,6 +5,9 @@ import com.github.yoannteruel.jetbrainsworktreeplugin.ui.MoveWorktreeDialog
 import com.github.yoannteruel.jetbrainsworktreeplugin.ui.WorktreeToolWindowPanel
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.Task
 
 class MoveWorktreeAction : AnAction() {
 
@@ -15,7 +18,11 @@ class MoveWorktreeAction : AnAction() {
         val dialog = MoveWorktreeDialog(project, worktree.path)
         if (!dialog.showAndGet()) return
 
-        GitWorktreeService.getInstance(project).moveWorktree(worktree.path, dialog.newPath)
+        ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Moving worktree...", false) {
+            override fun run(indicator: ProgressIndicator) {
+                GitWorktreeService.getInstance(project).moveWorktree(worktree.path, dialog.newPath)
+            }
+        })
     }
 
     override fun update(e: AnActionEvent) {
