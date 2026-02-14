@@ -28,7 +28,7 @@ Requires JDK 21. The Gradle toolchain (`jvmToolchain(21)` in `build.gradle.kts`)
 com.github.yoannteruel.jetbrainsworktreeplugin
   model/          WorktreeInfo data class
   services/       GitWorktreeService (CLI wrapper + caching), IdeaSyncService, WorktreeCacheStartupActivity
-  ui/             VCS tab provider, panel, table model, dialogs, frame title builder, project view decorator
+  ui/             VCS tab provider, panel, tree cell renderer, dialogs, frame title builder, project view decorator
   actions/        AnAction subclasses (Create, CreateFromCommit, Remove, Open, Lock, Move, Sync, Compare, CheckoutPR, Refresh)
   settings/       Persistent settings state, service, configurable (under Tools)
 ```
@@ -41,6 +41,7 @@ Key files:
 ## Architecture Notes
 
 - Worktree panel lives as a **tab in the VCS tool window** via `changesViewContent` extension point (`WorktreeChangesViewContentProvider`), not a standalone tool window
+- Worktree panel uses a `Tree` with `DefaultTreeModel`: main worktree as root node (always expanded), linked worktrees as children. `ColoredTreeCellRenderer` handles node presentation. `TreeSpeedSearch` provides type-to-filter.
 - Git worktree commands run via `GeneralCommandLine` + `CapturingProcessHandler` (since `GitCommand` has no `WORKTREE` constant)
 - `WorktreeListChangedTopic` on `MessageBus` for panel auto-refresh after mutations
 - Actions get selected worktree from `DataContext` via `WorktreeToolWindowPanel.SELECTED_WORKTREE` DataKey
