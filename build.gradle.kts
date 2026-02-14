@@ -44,7 +44,24 @@ intellijPlatform {
         id = "com.github.yoannteruel.jetbrainsworktreeplugin"
         name = "Git Worktree Tool"
         version = project.version.toString()
-        description = "Git worktree management for JetBrains IDEs"
+        description = """
+            <p>Manage Git worktrees directly from your IDE — create, remove, open, lock, move, and compare worktrees without leaving your editor.</p>
+            <h3>Features</h3>
+            <ul>
+                <li>Create and remove worktrees from a dedicated VCS tab</li>
+                <li>Open worktrees in new IDE windows</li>
+                <li>Lock/unlock and move worktrees</li>
+                <li>Sync <code>.idea</code> settings across worktrees</li>
+                <li>Checkout pull/merge requests as worktrees</li>
+                <li>Compare all worktrees side by side</li>
+                <li>Create worktrees from any commit via VCS Log context menu</li>
+            </ul>
+            <h3>Requirements</h3>
+            <ul>
+                <li>Git 2.15+ (for worktree support)</li>
+                <li>IntelliJ IDEA 2025.1+ or any JetBrains IDE</li>
+            </ul>
+        """.trimIndent()
         vendor {
             name = "Yoann Teruel"
         }

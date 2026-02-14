@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="40" height="40">
+  <!-- Root hex -->
+  <polygon points="64,112 70,108 70,100 64,96 58,100 58,108" fill="#F05033"/>
+  <!-- Trunk -->
+  <line x1="64" y1="96" x2="64" y2="74" stroke="#F05033" stroke-width="4.5" stroke-linecap="round"/>
+  <!-- Fork hex -->
+  <polygon points="64,80 69,77 69,71 64,68 59,71 59,77" fill="#F05033"/>
+  <!-- Curved branches -->
+  <path d="M59 73 C50 64, 34 60, 34 48" stroke="#2EC4A2" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  <line x1="64" y1="68" x2="64" y2="48" stroke="#F05033" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M69 73 C78 64, 94 60, 94 48" stroke="#5B8DEF" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  <!-- Left worktree hex -->
+  <polygon points="34,48 45,41 45,27 34,20 23,27 23,41" fill="none" stroke="#2EC4A2" stroke-width="2.5"/>
+  <polygon points="34,44 42,39 42,29 34,24 26,29 26,39" fill="#2EC4A2" opacity="0.2"/>
+  <rect x="28" y="30" width="12" height="8" rx="1.5" fill="#2EC4A2" opacity="0.8"/>
+  <rect x="28" y="28" width="5" height="3" rx="1" fill="#2EC4A2"/>
+  <!-- Center worktree hex -->
+  <polygon points="64,48 75,41 75,27 64,20 53,27 53,41" fill="none" stroke="#F05033" stroke-width="2.5"/>
+  <polygon points="64,44 72,39 72,29 64,24 56,29 56,39" fill="#F05033" opacity="0.2"/>
+  <rect x="58" y="30" width="12" height="8" rx="1.5" fill="#F05033" opacity="0.8"/>
+  <rect x="58" y="28" width="5" height="3" rx="1" fill="#F05033"/>
+  <!-- Right worktree hex -->
+  <polygon points="94,48 105,41 105,27 94,20 83,27 83,41" fill="none" stroke="#5B8DEF" stroke-width="2.5"/>
+  <polygon points="94,44 102,39 102,29 94,24 86,29 86,39" fill="#5B8DEF" opacity="0.2"/>
+  <rect x="88" y="30" width="12" height="8" rx="1.5" fill="#5B8DEF" opacity="0.8"/>
+  <rect x="88" y="28" width="5" height="3" rx="1" fill="#5B8DEF"/>
+</svg>
