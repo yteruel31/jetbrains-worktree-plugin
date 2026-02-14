@@ -21,7 +21,7 @@ import kotlinx.coroutines.withContext
 
 class WorktreeToolWindowPanel(
     private val project: Project,
-) : SimpleToolWindowPanel(true, true), Disposable {
+) : SimpleToolWindowPanel(false, true), Disposable {
 
     private val tableModel = WorktreeTableModel()
     private val table = JBTable(tableModel).apply {

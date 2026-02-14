@@ -19,11 +19,13 @@
         <projectService
                 serviceImplementation="com.github.yoannteruel.jetbrainsworktreeplugin.settings.WorktreeSettingsService"/>
 
-        <!-- Tool Window -->
-        <toolWindow id="Git Worktrees"
-                    anchor="bottom"
-                    icon="AllIcons.Vcs.Branch"
-                    factoryClass="com.github.yoannteruel.jetbrainsworktreeplugin.ui.WorktreeToolWindowFactory"/>
+        <!-- VCS tool window tab -->
+        <changesViewContent
+                id="Worktrees"
+                tabName="Worktrees"
+                className="com.github.yoannteruel.jetbrainsworktreeplugin.ui.WorktreeChangesViewContentProvider"
+                predicateClassName="com.github.yoannteruel.jetbrainsworktreeplugin.ui.WorktreeChangesViewContentProvider$VisibilityPredicate"
+                order="after Log"/>
 
         <!-- Title bar decoration -->
         <frameTitleBuilder

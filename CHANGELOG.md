@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.3.0] - 2026-02-14
+
+### Changed
+
+- Move worktree panel into the VCS tool window as a "Worktrees" tab next to the Log tab
+- Toolbar actions now displayed on the left side, matching the Log tab style
+
 ## [0.2.0] - 2026-02-14
 
 ### Added
