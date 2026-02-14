@@ -6,7 +6,7 @@ import com.github.yoannteruel.jetbrainsworktreeplugin.services.WorktreeListChang
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.DataKey
-import com.intellij.openapi.actionSystem.DataProvider
+import com.intellij.openapi.actionSystem.DataSink
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
@@ -21,7 +21,7 @@ import kotlinx.coroutines.withContext
 
 class WorktreeToolWindowPanel(
     private val project: Project,
-) : SimpleToolWindowPanel(true, true), DataProvider, Disposable {
+) : SimpleToolWindowPanel(true, true), Disposable {
 
     private val tableModel = WorktreeTableModel()
     private val table = JBTable(tableModel).apply {
@@ -64,11 +64,11 @@ class WorktreeToolWindowPanel(
         }
     }
 
-    override fun getData(dataId: String): Any? {
-        if (SELECTED_WORKTREE.`is`(dataId)) {
-            return getSelectedWorktree()
+    override fun uiDataSnapshot(sink: DataSink) {
+        super.uiDataSnapshot(sink)
+        sink.lazy(SELECTED_WORKTREE) {
+            getSelectedWorktree()
         }
-        return super.getData(dataId)
     }
 
     override fun dispose() {
