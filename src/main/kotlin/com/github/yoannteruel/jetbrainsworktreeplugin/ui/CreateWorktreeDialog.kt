@@ -1,6 +1,5 @@
 package com.github.yoannteruel.jetbrainsworktreeplugin.ui
 
-import com.github.yoannteruel.jetbrainsworktreeplugin.services.GitWorktreeService
 import com.github.yoannteruel.jetbrainsworktreeplugin.settings.WorktreeSettingsService
 import com.intellij.openapi.components.service
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
@@ -9,6 +8,7 @@ import com.intellij.openapi.observable.util.not
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
+import com.intellij.ui.TextFieldWithAutoCompletion
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.bindText
@@ -17,7 +17,11 @@ import com.intellij.ui.dsl.builder.panel
 import com.intellij.openapi.ui.DialogPanel
 import javax.swing.JComponent
 
-class CreateWorktreeDialog(private val project: Project) : DialogWrapper(project) {
+class CreateWorktreeDialog(
+    private val project: Project,
+    private val availableBranches: List<String>,
+    private val allBranches: List<String>,
+) : DialogWrapper(project) {
 
     var worktreePath: String = ""
         private set
@@ -31,17 +35,18 @@ class CreateWorktreeDialog(private val project: Project) : DialogWrapper(project
     private val propertyGraph = PropertyGraph()
     private val createNewBranchProperty = propertyGraph.property(true)
 
-    private var availableBranches: List<String> = emptyList()
     private var selectedExistingBranch: String = ""
     private var pathField: String = ""
     private lateinit var dialogPanel: DialogPanel
+    private lateinit var branchNameField: TextFieldWithAutoCompletion<String>
 
     init {
         title = "Create Worktree"
-        availableBranches = project.service<GitWorktreeService>().getAvailableBranches()
         if (availableBranches.isNotEmpty()) {
             selectedExistingBranch = availableBranches.first()
-            baseBranch = availableBranches.first()
+        }
+        if (allBranches.isNotEmpty()) {
+            baseBranch = allBranches.first()
         }
 
         val settings = project.service<WorktreeSettingsService>()
@@ -68,14 +73,15 @@ class CreateWorktreeDialog(private val project: Project) : DialogWrapper(project
         }
 
         row("Branch name:") {
-            textField()
-                .columns(30)
-                .bindText(::branchName)
+            branchNameField = TextFieldWithAutoCompletion.create(project, availableBranches, false, "")
+            branchNameField.setPlaceholder("Type or select a branch name")
+            branchNameField.document.addDocumentListener(SpaceToDashDocumentListener(project, branchNameField))
+            cell(branchNameField)
                 .align(AlignX.FILL)
         }.visibleIf(createNewBranchProperty)
 
         row("Base branch:") {
-            comboBox(availableBranches)
+            comboBox(allBranches)
                 .align(AlignX.FILL)
                 .onChanged { baseBranch = it.item as? String }
         }.visibleIf(createNewBranchProperty)
@@ -94,7 +100,7 @@ class CreateWorktreeDialog(private val project: Project) : DialogWrapper(project
         if (pathField.isBlank()) {
             return ValidationInfo("Worktree path must not be empty")
         }
-        if (createNewBranchProperty.get() && branchName.isBlank()) {
+        if (createNewBranchProperty.get() && branchNameField.text.isBlank()) {
             return ValidationInfo("Branch name must not be empty when creating a new branch")
         }
         if (!createNewBranchProperty.get() && selectedExistingBranch.isBlank()) {
@@ -107,7 +113,9 @@ class CreateWorktreeDialog(private val project: Project) : DialogWrapper(project
         dialogPanel.apply()
         createNewBranch = createNewBranchProperty.get()
         worktreePath = pathField
-        if (!createNewBranch) {
+        if (createNewBranch) {
+            branchName = branchNameField.text
+        } else {
             branchName = selectedExistingBranch
             baseBranch = null
         }

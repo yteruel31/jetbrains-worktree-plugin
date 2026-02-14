@@ -16,29 +16,43 @@ class CreateWorktreeAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val dialog = CreateWorktreeDialog(project)
-        if (!dialog.showAndGet()) return
 
-        val path = dialog.worktreePath
-        val branch = dialog.branchName
-        val createNew = dialog.createNewBranch
-        val base = dialog.baseBranch
+        ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Loading branches...", true) {
+            private lateinit var availableBranches: List<String>
+            private lateinit var allBranches: List<String>
 
-        ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Creating worktree...", false) {
             override fun run(indicator: ProgressIndicator) {
                 val service = GitWorktreeService.getInstance(project)
-                service.addWorktree(path, branch, createNew, base)
+                availableBranches = service.getAvailableBranches()
+                allBranches = service.getAllBranches()
+            }
 
-                val settings = WorktreeSettingsService.getInstance(project)
-                if (settings.state.autoSyncIdea) {
-                    indicator.text = "Syncing .idea settings..."
-                    IdeaSyncService.getInstance(project).syncToWorktree(path)
-                }
+            override fun onSuccess() {
+                val dialog = CreateWorktreeDialog(project, availableBranches, allBranches)
+                if (!dialog.showAndGet()) return
 
-                if (settings.state.postCreationCommandEnabled && !settings.state.postCreationCommand.isNullOrBlank()) {
-                    indicator.text = "Running post-creation command..."
-                    service.runPostCreationCommand(path, settings.state.postCreationCommand!!)
-                }
+                val path = dialog.worktreePath
+                val branch = dialog.branchName
+                val createNew = dialog.createNewBranch
+                val base = dialog.baseBranch
+
+                ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Creating worktree...", false) {
+                    override fun run(indicator: ProgressIndicator) {
+                        val service = GitWorktreeService.getInstance(project)
+                        service.addWorktree(path, branch, createNew, base)
+
+                        val settings = WorktreeSettingsService.getInstance(project)
+                        if (settings.state.autoSyncIdea) {
+                            indicator.text = "Syncing .idea settings..."
+                            IdeaSyncService.getInstance(project).syncToWorktree(path)
+                        }
+
+                        if (settings.state.postCreationCommandEnabled && !settings.state.postCreationCommand.isNullOrBlank()) {
+                            indicator.text = "Running post-creation command..."
+                            service.runPostCreationCommand(path, settings.state.postCreationCommand!!)
+                        }
+                    }
+                })
             }
         })
     }

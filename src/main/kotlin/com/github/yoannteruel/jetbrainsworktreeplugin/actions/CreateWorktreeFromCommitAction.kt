@@ -22,32 +22,42 @@ class CreateWorktreeFromCommitAction : AnAction() {
 
         val commitHash = commits.first().hash.asString()
 
-        val dialog = CreateWorktreeFromCommitDialog(project, commitHash)
-        if (!dialog.showAndGet()) return
+        ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Loading branches...", true) {
+            private lateinit var availableBranches: List<String>
 
-        val path = dialog.worktreePath
-        val createNew = dialog.createNewBranch
-        val branch = dialog.branchName
-
-        ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Creating worktree...", false) {
             override fun run(indicator: ProgressIndicator) {
-                val service = GitWorktreeService.getInstance(project)
-                if (createNew && branch.isNotBlank()) {
-                    service.addWorktree(path, branch, true, commitHash)
-                } else {
-                    service.addWorktree(path, commitHash, false, null)
-                }
+                availableBranches = GitWorktreeService.getInstance(project).getAvailableBranches()
+            }
 
-                val settings = WorktreeSettingsService.getInstance(project)
-                if (settings.state.autoSyncIdea) {
-                    indicator.text = "Syncing .idea settings..."
-                    IdeaSyncService.getInstance(project).syncToWorktree(path)
-                }
+            override fun onSuccess() {
+                val dialog = CreateWorktreeFromCommitDialog(project, commitHash, availableBranches)
+                if (!dialog.showAndGet()) return
 
-                if (settings.state.postCreationCommandEnabled && !settings.state.postCreationCommand.isNullOrBlank()) {
-                    indicator.text = "Running post-creation command..."
-                    service.runPostCreationCommand(path, settings.state.postCreationCommand!!)
-                }
+                val path = dialog.worktreePath
+                val createNew = dialog.createNewBranch
+                val branch = dialog.branchName
+
+                ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Creating worktree...", false) {
+                    override fun run(indicator: ProgressIndicator) {
+                        val service = GitWorktreeService.getInstance(project)
+                        if (createNew && branch.isNotBlank()) {
+                            service.addWorktree(path, branch, true, commitHash)
+                        } else {
+                            service.addWorktree(path, commitHash, false, null)
+                        }
+
+                        val settings = WorktreeSettingsService.getInstance(project)
+                        if (settings.state.autoSyncIdea) {
+                            indicator.text = "Syncing .idea settings..."
+                            IdeaSyncService.getInstance(project).syncToWorktree(path)
+                        }
+
+                        if (settings.state.postCreationCommandEnabled && !settings.state.postCreationCommand.isNullOrBlank()) {
+                            indicator.text = "Running post-creation command..."
+                            service.runPostCreationCommand(path, settings.state.postCreationCommand!!)
+                        }
+                    }
+                })
             }
         })
     }

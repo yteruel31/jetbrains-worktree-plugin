@@ -113,9 +113,17 @@ class GitWorktreeService(private val project: Project) {
     }
 
     fun getAvailableBranches(): List<String> {
+        return listBranches("--list")
+    }
+
+    fun getAllBranches(): List<String> {
+        return listBranches("-a")
+    }
+
+    private fun listBranches(vararg extraArgs: String): List<String> {
         val root = findGitRoot() ?: return emptyList()
         val gitExecutable = GitExecutableManager.getInstance().getPathToGit(project)
-        val cmd = GeneralCommandLine(gitExecutable, "branch", "--list", "--format=%(refname:short)")
+        val cmd = GeneralCommandLine(gitExecutable, "branch", *extraArgs, "--format=%(refname:short)")
         cmd.withWorkDirectory(root.path)
         return try {
             val handler = CapturingProcessHandler(cmd)

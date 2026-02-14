@@ -4,7 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [0.1.2] - 2026-02-14
+## [0.2.0] - 2026-02-14
+
+### Added
+
+- Branch name autocomplete with existing local branches in worktree creation dialogs
+- Remote branches available in base branch selection
+- Automatic space-to-dash replacement when typing branch names
 
 ### Fixed
 
