@@ -75,3 +75,4 @@ Key files:
   - `IconLoader` / `AllIcons` — for icons (supports HiDPI and themes)
 - **Never block the EDT.** All I/O, git commands, and heavy computation must run in `Task.Backgroundable` or coroutines.
 - **No internal APIs.** Don't use classes from `*.impl` packages or annotated `@ApiStatus.Internal`.
+- **Keep the plugin description up to date.** When adding or removing user-facing features, update the HTML `description` in `build.gradle.kts` (`pluginConfiguration` block) to reflect the change. This description is shown on the JetBrains Marketplace and in the IDE Plugins dialog.
