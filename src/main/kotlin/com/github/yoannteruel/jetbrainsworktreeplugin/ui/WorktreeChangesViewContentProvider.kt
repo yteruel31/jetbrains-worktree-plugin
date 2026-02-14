@@ -1,7 +1,9 @@
 package com.github.yoannteruel.jetbrainsworktreeplugin.ui
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.vcs.changes.ui.ChangesViewContentProvider
+import com.intellij.openapi.wm.ToolWindow
 import com.intellij.ui.content.Content
 import git4idea.repo.GitRepositoryManager
 import java.util.function.Predicate
@@ -14,6 +16,8 @@ class WorktreeChangesViewContentProvider(private val project: Project) : Changes
         val worktreePanel = WorktreeToolWindowPanel(project)
         panel = worktreePanel
         content.component = worktreePanel
+        content.icon = IconLoader.getIcon("/icons/gitWorktree.svg", WorktreeChangesViewContentProvider::class.java)
+        content.putUserData(ToolWindow.SHOW_CONTENT_ICON, true)
         content.setDisposer(worktreePanel)
     }
 
