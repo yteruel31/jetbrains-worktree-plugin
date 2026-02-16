@@ -1,7 +1,7 @@
 package com.github.yoannteruel.jetbrainsworktreeplugin.actions
 
 import com.github.yoannteruel.jetbrainsworktreeplugin.services.GitWorktreeService
-import com.github.yoannteruel.jetbrainsworktreeplugin.services.IdeaSyncService
+import com.github.yoannteruel.jetbrainsworktreeplugin.services.WorktreeSyncService
 import com.github.yoannteruel.jetbrainsworktreeplugin.settings.WorktreeSettingsService
 import com.github.yoannteruel.jetbrainsworktreeplugin.ui.CreateWorktreeFromCommitDialog
 import com.intellij.openapi.actionSystem.ActionUpdateThread
@@ -47,9 +47,9 @@ class CreateWorktreeFromCommitAction : AnAction() {
                         }
 
                         val settings = WorktreeSettingsService.getInstance(project)
-                        if (settings.state.autoSyncIdea) {
-                            indicator.text = "Syncing .idea settings..."
-                            IdeaSyncService.getInstance(project).syncToWorktree(path)
+                        if (settings.state.autoSync) {
+                            indicator.text = "Syncing files to worktree..."
+                            WorktreeSyncService.getInstance(project).syncToWorktree(path)
                         }
 
                         if (settings.state.postCreationCommandEnabled && !settings.state.postCreationCommand.isNullOrBlank()) {

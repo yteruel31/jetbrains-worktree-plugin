@@ -13,4 +13,12 @@ class WorktreeSettingsService :
     companion object {
         fun getInstance(project: Project): WorktreeSettingsService = project.service()
     }
+
+    override fun loadState(state: WorktreeSettingsState) {
+        if (!state.settingsMigrated) {
+            state.autoSync = state.autoSyncIdea
+            state.settingsMigrated = true
+        }
+        super.loadState(state)
+    }
 }

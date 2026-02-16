@@ -4,7 +4,7 @@
     <vendor>Yoann Teruel</vendor>
     <description><![CDATA[
         Git worktree management for JetBrains IDEs.
-        Create, remove, open, lock/unlock, move worktrees and sync .idea settings — all from the IDE.
+        Create, remove, open, lock/unlock, move worktrees and sync files across worktrees — all from the IDE.
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
@@ -15,7 +15,7 @@
         <projectService
                 serviceImplementation="com.github.yoannteruel.jetbrainsworktreeplugin.services.GitWorktreeService"/>
         <projectService
-                serviceImplementation="com.github.yoannteruel.jetbrainsworktreeplugin.services.IdeaSyncService"/>
+                serviceImplementation="com.github.yoannteruel.jetbrainsworktreeplugin.services.WorktreeSyncService"/>
         <projectService
                 serviceImplementation="com.github.yoannteruel.jetbrainsworktreeplugin.settings.WorktreeSettingsService"/>
 
@@ -78,10 +78,10 @@
                     text="Move Worktree"
                     description="Move the selected worktree to a new location"
                     icon="/icons/setCurrentDirectory.svg"/>
-            <action id="GitWorktree.SyncIdea"
-                    class="com.github.yoannteruel.jetbrainsworktreeplugin.actions.SyncIdeaAction"
-                    text="Sync .idea Settings"
-                    description="Sync .idea directory from main worktree to all linked worktrees"
+            <action id="GitWorktree.Sync"
+                    class="com.github.yoannteruel.jetbrainsworktreeplugin.actions.SyncToWorktreesAction"
+                    text="Sync to Worktrees"
+                    description="Sync enabled paths from main worktree to all linked worktrees"
                     icon="AllIcons.Actions.Refresh"/>
             <action id="GitWorktree.Compare"
                     class="com.github.yoannteruel.jetbrainsworktreeplugin.actions.CompareWorktreesAction"

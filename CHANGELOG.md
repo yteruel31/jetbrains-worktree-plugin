@@ -4,10 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [0.3.2] - 2026-02-16
+## [0.4.0] - 2026-02-16
+
+### Added
+
+- Sync custom files and directories across worktrees (`.env`, `.claude/`, `.npmrc`, and any user-defined paths)
+- Unified Sync Configuration panel in settings with per-path enable/disable
+- `.idea` sync exclusions dialog accessible from the sync configuration panel
 
 ### Changed
 
+- Rename "Sync .idea Settings" action to "Sync to Worktrees" — now syncs all enabled entries
+- "Auto-sync .idea on worktree creation" setting renamed to "Auto-sync on worktree creation" — applies to all enabled sync entries
+- Refactor `IdeaSyncService` into `WorktreeSyncService` with support for both files and directories
 - Worktrees now always open in a new window to prevent IDE crash during project switch
 
 ### Removed

@@ -51,7 +51,7 @@ intellijPlatform {
                 <li>Create and remove worktrees from a dedicated VCS tab</li>
                 <li>Open worktrees in new IDE windows</li>
                 <li>Lock/unlock and move worktrees</li>
-                <li>Sync <code>.idea</code> settings across worktrees</li>
+                <li>Sync files and settings across worktrees (<code>.idea</code>, <code>.env</code>, and custom paths)</li>
                 <li>Checkout pull/merge requests as worktrees</li>
                 <li>Compare all worktrees side by side</li>
                 <li>Create worktrees from any commit via VCS Log context menu</li>
