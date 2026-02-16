@@ -12,6 +12,7 @@ class WorktreeFrameTitleBuilder : FrameTitleBuilder() {
 
     override fun getProjectTitle(project: Project): String {
         val defaultTitle = project.name
+        if (project.isDisposed) return defaultTitle
 
         val settings = project.service<WorktreeSettingsService>()
         if (!settings.state.showWorktreeInTitle) {

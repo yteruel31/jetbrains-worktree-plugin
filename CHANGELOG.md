@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.3.2] - 2026-02-16
+
+### Changed
+
+- Worktrees now always open in a new window to prevent IDE crash during project switch
+
+### Removed
+
+- Remove "Open worktrees in new window" setting (was under Tools > Git Worktree Tool)
+
+### Fixed
+
+- Add disposed-project guards in FrameTitleBuilder, ProjectViewDecorator, cache refresh, and panel coroutines
+
 ## [0.3.1] - 2026-02-14
 
 ### Added

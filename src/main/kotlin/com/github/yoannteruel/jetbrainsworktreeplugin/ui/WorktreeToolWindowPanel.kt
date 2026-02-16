@@ -87,9 +87,12 @@ class WorktreeToolWindowPanel(
 
     private fun refreshWorktrees() {
         cs.launch {
+            if (project.isDisposed) return@launch
             val worktrees = project.service<GitWorktreeService>().listWorktrees()
             withContext(Dispatchers.Main) {
-                updateTree(worktrees)
+                if (!project.isDisposed) {
+                    updateTree(worktrees)
+                }
             }
         }
     }

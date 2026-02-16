@@ -9,5 +9,4 @@ class WorktreeSettingsState : BaseState() {
     var postCreationCommandEnabled by property(false)
     var postCreationCommand by string()
     var showWorktreeInTitle by property(true)
-    var openWorktreeInNewWindow by property(true)
 }

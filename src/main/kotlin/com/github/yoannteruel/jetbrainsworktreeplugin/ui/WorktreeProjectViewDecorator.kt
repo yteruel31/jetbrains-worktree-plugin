@@ -11,6 +11,7 @@ class WorktreeProjectViewDecorator(private val project: Project) : ProjectViewNo
 
     override fun decorate(node: ProjectViewNode<*>, data: PresentationData) {
         if (node !is PsiDirectoryNode) return
+        if (project.isDisposed) return
 
         val dir = node.virtualFile ?: return
         val projectPath = project.basePath ?: return

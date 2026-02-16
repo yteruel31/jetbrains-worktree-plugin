@@ -37,9 +37,12 @@ class GitWorktreeService(private val project: Project) {
 
     fun refreshCacheAsync() {
         ApplicationManager.getApplication().executeOnPooledThread {
+            if (project.isDisposed) return@executeOnPooledThread
             val worktrees = listWorktrees()
             cachedWorktrees = worktrees
-            project.messageBus.syncPublisher(TOPIC).worktreeListChanged()
+            if (!project.isDisposed) {
+                project.messageBus.syncPublisher(TOPIC).worktreeListChanged()
+            }
         }
     }
 

@@ -45,10 +45,6 @@ class WorktreeSettingsConfigurable(private val project: Project) : Configurable 
                     checkBox("Show worktree branch in window title")
                         .bindSelected(state::showWorktreeInTitle)
                 }
-                row {
-                    checkBox("Open worktrees in new window")
-                        .bindSelected(state::openWorktreeInNewWindow)
-                }
             }
             group(".idea Sync Exclusions") {
                 row {
