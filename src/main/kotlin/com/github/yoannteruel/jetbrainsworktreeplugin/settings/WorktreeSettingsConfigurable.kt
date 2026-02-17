@@ -91,6 +91,10 @@ class WorktreeSettingsConfigurable(private val project: Project) : Configurable 
                     checkBox("Show worktree branch in window title")
                         .bindSelected(state::showWorktreeInTitle)
                 }
+                row {
+                    checkBox("Open worktree in new window after creation")
+                        .bindSelected(state::openAfterCreation)
+                }
             }
             group("Sync Configuration") {
                 row {

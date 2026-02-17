@@ -4,6 +4,7 @@ import com.github.yoannteruel.jetbrainsworktreeplugin.services.GitWorktreeServic
 import com.github.yoannteruel.jetbrainsworktreeplugin.services.WorktreeSyncService
 import com.github.yoannteruel.jetbrainsworktreeplugin.settings.WorktreeSettingsService
 import com.github.yoannteruel.jetbrainsworktreeplugin.ui.CheckoutPRDialog
+import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -12,6 +13,7 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.ui.Messages
 import git4idea.repo.GitRepositoryManager
+import java.nio.file.Path
 
 class CheckoutPullRequestAction : AnAction() {
 
@@ -19,50 +21,74 @@ class CheckoutPullRequestAction : AnAction() {
         val project = e.project ?: return
         val service = GitWorktreeService.getInstance(project)
 
-        val provider = service.detectRemoteProvider()
-        if (provider == null) {
-            Messages.showWarningDialog(
-                project,
-                "Could not detect a supported remote provider (GitHub, GitLab, or Bitbucket) from the 'origin' remote URL.",
-                "Unsupported Remote"
-            )
-            return
-        }
+        ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Detecting remote provider...", true) {
+            private var provider: GitWorktreeService.RemoteProvider? = null
 
-        val dialog = CheckoutPRDialog(project, provider)
-        if (!dialog.showAndGet()) return
-
-        val prNumber = dialog.prNumber
-        val path = dialog.worktreePath
-
-        ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Checking out pull request...", false) {
             override fun run(indicator: ProgressIndicator) {
-                indicator.text = "Fetching PR #$prNumber..."
-                val localBranch = service.fetchPullRequest(prNumber, provider)
-                if (localBranch == null) {
-                    com.intellij.openapi.application.ApplicationManager.getApplication().invokeLater {
-                        Messages.showErrorDialog(
-                            project,
-                            "Failed to fetch PR #$prNumber from ${provider.label}. Check the IDE log for details.",
-                            "Fetch Failed"
-                        )
-                    }
+                provider = service.detectRemoteProvider()
+            }
+
+            override fun onSuccess() {
+                val detectedProvider = provider
+                if (detectedProvider == null) {
+                    Messages.showWarningDialog(
+                        project,
+                        "Could not detect a supported remote provider (GitHub, GitLab, or Bitbucket) from the 'origin' remote URL.",
+                        "Unsupported Remote"
+                    )
                     return
                 }
 
-                indicator.text = "Creating worktree..."
-                service.addWorktree(path, localBranch, false, null)
+                val dialog = CheckoutPRDialog(project, detectedProvider)
+                if (!dialog.showAndGet()) return
 
-                val settings = WorktreeSettingsService.getInstance(project)
-                if (settings.state.autoSync) {
-                    indicator.text = "Syncing files to worktree..."
-                    WorktreeSyncService.getInstance(project).syncToWorktree(path)
-                }
+                val prNumber = dialog.prNumber
+                val path = dialog.worktreePath
+                val shouldSync = dialog.syncFiles
+                val shouldRunCommand = dialog.runPostCreationCommand
+                val shouldOpen = dialog.openInNewWindow
 
-                if (settings.state.postCreationCommandEnabled && !settings.state.postCreationCommand.isNullOrBlank()) {
-                    indicator.text = "Running post-creation command..."
-                    service.runPostCreationCommand(path, settings.state.postCreationCommand!!)
-                }
+                ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Checking out pull request...", false) {
+                    private var creationSucceeded = false
+
+                    override fun run(indicator: ProgressIndicator) {
+                        indicator.text = "Fetching PR #$prNumber..."
+                        val localBranch = service.fetchPullRequest(prNumber, detectedProvider)
+                        if (localBranch == null) {
+                            com.intellij.openapi.application.ApplicationManager.getApplication().invokeLater {
+                                Messages.showErrorDialog(
+                                    project,
+                                    "Failed to fetch PR #$prNumber from ${detectedProvider.label}. Check the IDE log for details.",
+                                    "Fetch Failed"
+                                )
+                            }
+                            return
+                        }
+
+                        indicator.text = "Creating worktree..."
+                        service.addWorktree(path, localBranch, false, null)
+                        creationSucceeded = true
+
+                        if (shouldSync) {
+                            indicator.text = "Syncing files to worktree..."
+                            WorktreeSyncService.getInstance(project).syncToWorktree(path)
+                        }
+
+                        if (shouldRunCommand) {
+                            val command = WorktreeSettingsService.getInstance(project).state.postCreationCommand
+                            if (!command.isNullOrBlank()) {
+                                indicator.text = "Running post-creation command..."
+                                service.runPostCreationCommand(path, command)
+                            }
+                        }
+                    }
+
+                    override fun onSuccess() {
+                        if (creationSucceeded && shouldOpen) {
+                            ProjectUtil.openOrImport(Path.of(path), project, true)
+                        }
+                    }
+                })
             }
         })
     }

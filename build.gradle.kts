@@ -55,6 +55,7 @@ intellijPlatform {
                 <li>Checkout pull/merge requests as worktrees</li>
                 <li>Compare all worktrees side by side</li>
                 <li>Create worktrees from any commit via VCS Log context menu</li>
+                <li>Per-dialog overrides for sync, post-creation command, and open-in-new-window</li>
             </ul>
             <h3>Requirements</h3>
             <ul>

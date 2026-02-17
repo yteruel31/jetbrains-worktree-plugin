@@ -31,9 +31,19 @@ class CreateWorktreeDialog(
         private set
     var baseBranch: String? = null
         private set
+    var syncFiles: Boolean = false
+        private set
+    var runPostCreationCommand: Boolean = false
+        private set
+    var openInNewWindow: Boolean = false
+        private set
 
+    private val settings = project.service<WorktreeSettingsService>()
     private val propertyGraph = PropertyGraph()
     private val createNewBranchProperty = propertyGraph.property(true)
+    private val syncFilesProperty = propertyGraph.property(false)
+    private val runPostCreationCommandProperty = propertyGraph.property(false)
+    private val openInNewWindowProperty = propertyGraph.property(false)
 
     private var selectedExistingBranch: String = ""
     private var pathField: String = ""
@@ -49,8 +59,16 @@ class CreateWorktreeDialog(
             baseBranch = allBranches.first()
         }
 
-        val settings = project.service<WorktreeSettingsService>()
         pathField = settings.state.defaultWorktreeDirectory ?: ""
+
+        syncFiles = settings.state.autoSync
+        runPostCreationCommand = !settings.state.postCreationCommand.isNullOrBlank()
+                && settings.state.postCreationCommandEnabled
+        openInNewWindow = settings.state.openAfterCreation
+
+        syncFilesProperty.set(syncFiles)
+        runPostCreationCommandProperty.set(runPostCreationCommand)
+        openInNewWindowProperty.set(openInNewWindow)
 
         init()
     }
@@ -91,6 +109,28 @@ class CreateWorktreeDialog(
                 .align(AlignX.FILL)
                 .onChanged { selectedExistingBranch = it.item as? String ?: "" }
         }.visibleIf(createNewBranchProperty.not())
+
+        separator()
+
+        row {
+            checkBox("Sync files to new worktree")
+                .bindSelected(syncFilesProperty)
+        }
+
+        if (!settings.state.postCreationCommand.isNullOrBlank()) {
+            row {
+                checkBox("Run post-creation command")
+                    .bindSelected(runPostCreationCommandProperty)
+            }
+            row {
+                comment(settings.state.postCreationCommand!!)
+            }.visibleIf(runPostCreationCommandProperty)
+        }
+
+        row {
+            checkBox("Open in new window")
+                .bindSelected(openInNewWindowProperty)
+        }
         }
         return dialogPanel
     }
@@ -113,6 +153,9 @@ class CreateWorktreeDialog(
         dialogPanel.apply()
         createNewBranch = createNewBranchProperty.get()
         worktreePath = pathField
+        syncFiles = syncFilesProperty.get()
+        runPostCreationCommand = runPostCreationCommandProperty.get()
+        openInNewWindow = openInNewWindowProperty.get()
         if (createNewBranch) {
             branchName = branchNameField.text
         } else {

@@ -4,11 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [0.4.0] - 2026-02-16
+## [0.4.0] - 2026-02-17
 
 ### Added
 
 - Sync custom files and directories across worktrees (`.env`, `.claude/`, `.npmrc`, and any user-defined paths)
+- Per-dialog overrides for sync, post-creation command, and open-in-new-window during worktree creation
+- "Open worktree in new window after creation" global setting
+- Force remove: when worktree removal fails due to uncommitted changes, offers to retry with `--force`
+
+### Fixed
+
+- Exclude `vcs.xml` from `.idea/` sync to prevent "Invalid VCS root mapping" errors in linked worktrees
+- Fix synchronous git execution on EDT in Checkout PR action (`detectRemoteProvider`)
+- Fix `fireWorktreeListChanged()` firing even when worktree removal failed
 - Unified Sync Configuration panel in settings with per-path enable/disable
 - `.idea` sync exclusions dialog accessible from the sync configuration panel
 

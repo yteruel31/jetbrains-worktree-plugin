@@ -4,13 +4,14 @@ import com.github.yoannteruel.jetbrainsworktreeplugin.services.GitWorktreeServic
 import com.github.yoannteruel.jetbrainsworktreeplugin.services.WorktreeSyncService
 import com.github.yoannteruel.jetbrainsworktreeplugin.settings.WorktreeSettingsService
 import com.github.yoannteruel.jetbrainsworktreeplugin.ui.CreateWorktreeDialog
+import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import git4idea.repo.GitRepositoryManager
+import java.nio.file.Path
 
 class CreateWorktreeAction : AnAction() {
 
@@ -35,21 +36,32 @@ class CreateWorktreeAction : AnAction() {
                 val branch = dialog.branchName
                 val createNew = dialog.createNewBranch
                 val base = dialog.baseBranch
+                val shouldSync = dialog.syncFiles
+                val shouldRunCommand = dialog.runPostCreationCommand
+                val shouldOpen = dialog.openInNewWindow
 
                 ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Creating worktree...", false) {
                     override fun run(indicator: ProgressIndicator) {
                         val service = GitWorktreeService.getInstance(project)
                         service.addWorktree(path, branch, createNew, base)
 
-                        val settings = WorktreeSettingsService.getInstance(project)
-                        if (settings.state.autoSync) {
+                        if (shouldSync) {
                             indicator.text = "Syncing files to worktree..."
                             WorktreeSyncService.getInstance(project).syncToWorktree(path)
                         }
 
-                        if (settings.state.postCreationCommandEnabled && !settings.state.postCreationCommand.isNullOrBlank()) {
-                            indicator.text = "Running post-creation command..."
-                            service.runPostCreationCommand(path, settings.state.postCreationCommand!!)
+                        if (shouldRunCommand) {
+                            val command = WorktreeSettingsService.getInstance(project).state.postCreationCommand
+                            if (!command.isNullOrBlank()) {
+                                indicator.text = "Running post-creation command..."
+                                service.runPostCreationCommand(path, command)
+                            }
+                        }
+                    }
+
+                    override fun onSuccess() {
+                        if (shouldOpen) {
+                            ProjectUtil.openOrImport(Path.of(path), project, true)
                         }
                     }
                 })

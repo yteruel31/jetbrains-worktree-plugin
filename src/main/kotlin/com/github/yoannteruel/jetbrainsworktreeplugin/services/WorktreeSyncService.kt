@@ -24,6 +24,7 @@ class WorktreeSyncService(private val project: Project) {
 
         private val IDEA_DEFAULT_EXCLUDED = setOf(
             "workspace.xml",
+            "vcs.xml",
             "shelf",
             "dataSources",
             "httpRequests",
