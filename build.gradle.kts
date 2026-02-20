@@ -53,7 +53,7 @@ intellijPlatform {
                 <li>Lock/unlock and move worktrees</li>
                 <li>Sync files and settings across worktrees (<code>.idea</code>, <code>.env</code>, and custom paths)</li>
                 <li>Checkout pull/merge requests as worktrees</li>
-                <li>Compare all worktrees side by side</li>
+                <li>Compare worktree branches with built-in diff viewer</li>
                 <li>Create worktrees from any commit via VCS Log context menu</li>
                 <li>Per-dialog overrides for sync, post-creation command, and open-in-new-window</li>
             </ul>

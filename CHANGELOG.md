@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.4.1] - 2026-02-20
+
+### Fixed
+
+- Fix Compare Worktrees action: replace non-functional static table with actual branch diff viewer using IntelliJ's native diff UI
+- Compare button now requires a worktree to be selected in the tree panel
+
 ## [0.4.0] - 2026-02-17
 
 ### Added

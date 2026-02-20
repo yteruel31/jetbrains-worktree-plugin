@@ -86,7 +86,7 @@
             <action id="GitWorktree.Compare"
                     class="com.github.yoannteruel.jetbrainsworktreeplugin.actions.CompareWorktreesAction"
                     text="Compare Worktrees"
-                    description="Show a comparison of all worktrees"
+                    description="Compare branches between worktrees"
                     icon="AllIcons.Actions.Diff"/>
             <action id="GitWorktree.CheckoutPR"
                     class="com.github.yoannteruel.jetbrainsworktreeplugin.actions.CheckoutPullRequestAction"
