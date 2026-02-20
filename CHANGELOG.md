@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Fix Worktrees tab icon not appearing on first load by using a `ChangesViewContentProvider.Preloader` to set the icon before the tab header renders
 - Fix Compare Worktrees action: replace non-functional static table with actual branch diff viewer using IntelliJ's native diff UI
 - Compare button now requires a worktree to be selected in the tree panel
 - Replace deprecated `Document.addDocumentListener(DocumentListener)` with `Disposable`-scoped overload in worktree creation dialogs

@@ -25,6 +25,8 @@
                 tabName="Worktrees"
                 className="com.github.yoannteruel.jetbrainsworktreeplugin.ui.WorktreeChangesViewContentProvider"
                 predicateClassName="com.github.yoannteruel.jetbrainsworktreeplugin.ui.WorktreeChangesViewContentProvider$VisibilityPredicate"
+                preloaderClassName="com.github.yoannteruel.jetbrainsworktreeplugin.ui.WorktreeChangesViewContentProvider$ContentPreloader"
+                preloaded="true"
                 order="after Log"/>
 
         <!-- Title bar decoration -->

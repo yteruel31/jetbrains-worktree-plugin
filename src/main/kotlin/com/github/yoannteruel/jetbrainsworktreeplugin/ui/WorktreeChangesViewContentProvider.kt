@@ -25,6 +25,13 @@ class WorktreeChangesViewContentProvider(private val project: Project) : Changes
         panel = null
     }
 
+    class ContentPreloader(private val project: Project) : ChangesViewContentProvider.Preloader {
+        override fun preloadTabContent(content: Content) {
+            content.icon = IconLoader.getIcon("/icons/gitWorktree.svg", WorktreeChangesViewContentProvider::class.java)
+            content.putUserData(ToolWindow.SHOW_CONTENT_ICON, true)
+        }
+    }
+
     class VisibilityPredicate : Predicate<Project> {
         override fun test(project: Project): Boolean {
             return GitRepositoryManager.getInstance(project).repositories.isNotEmpty()
