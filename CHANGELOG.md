@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 - Fix Compare Worktrees action: replace non-functional static table with actual branch diff viewer using IntelliJ's native diff UI
 - Compare button now requires a worktree to be selected in the tree panel
+- Replace deprecated `Document.addDocumentListener(DocumentListener)` with `Disposable`-scoped overload in worktree creation dialogs
 
 ## [0.4.0] - 2026-02-17
 

@@ -93,7 +93,7 @@ class CreateWorktreeDialog(
         row("Branch name:") {
             branchNameField = TextFieldWithAutoCompletion.create(project, availableBranches, false, "")
             branchNameField.setPlaceholder("Type or select a branch name")
-            branchNameField.document.addDocumentListener(SpaceToDashDocumentListener(project, branchNameField))
+            branchNameField.document.addDocumentListener(SpaceToDashDocumentListener(project, branchNameField), disposable)
             cell(branchNameField)
                 .align(AlignX.FILL)
         }.visibleIf(createNewBranchProperty)
