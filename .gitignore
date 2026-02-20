@@ -13,6 +13,9 @@ Thumbs.db
 # Kotlin
 *.class
 
+# Sandbox artifacts
+/META-INF/
+
 # IntelliJ Platform Gradle Plugin cache
 .intellijPlatform/
 
