@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [0.4.1] - 2026-02-20
 
+### Added
+
+- Default base branch selection when creating a worktree: uses the selected worktree's branch, or auto-detects the repo's default branch when nothing is selected
+
 ### Fixed
 
 - Fix Compare Worktrees action: replace non-functional static table with actual branch diff viewer using IntelliJ's native diff UI

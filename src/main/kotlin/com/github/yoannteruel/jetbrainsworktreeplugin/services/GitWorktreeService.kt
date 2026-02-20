@@ -133,6 +133,25 @@ class GitWorktreeService(private val project: Project) {
         fireWorktreeListChanged()
     }
 
+    fun getDefaultBranchName(): String? {
+        val root = findGitRoot() ?: return null
+        val gitExecutable = GitExecutableManager.getInstance().getPathToGit(project)
+        val cmd = GeneralCommandLine(gitExecutable, "symbolic-ref", "--short", "refs/remotes/origin/HEAD")
+        cmd.withWorkDirectory(root.path)
+        try {
+            val handler = CapturingProcessHandler(cmd)
+            val result = handler.runProcess(10_000)
+            if (result.exitCode == 0) {
+                val branch = result.stdout.trim().removePrefix("origin/")
+                if (branch.isNotBlank()) return branch
+            }
+        } catch (e: Exception) {
+            LOG.debug("Could not determine default branch from remote", e)
+        }
+
+        return getCachedWorktrees().firstOrNull { it.isMainWorktree }?.branchName
+    }
+
     fun getAvailableBranches(): List<String> {
         return listBranches("--list")
     }

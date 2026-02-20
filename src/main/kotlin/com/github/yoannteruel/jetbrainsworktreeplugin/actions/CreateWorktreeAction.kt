@@ -4,6 +4,7 @@ import com.github.yoannteruel.jetbrainsworktreeplugin.services.GitWorktreeServic
 import com.github.yoannteruel.jetbrainsworktreeplugin.services.WorktreeSyncService
 import com.github.yoannteruel.jetbrainsworktreeplugin.settings.WorktreeSettingsService
 import com.github.yoannteruel.jetbrainsworktreeplugin.ui.CreateWorktreeDialog
+import com.github.yoannteruel.jetbrainsworktreeplugin.ui.WorktreeToolWindowPanel
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -17,19 +18,23 @@ class CreateWorktreeAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
+        val selectedWorktree = e.getData(WorktreeToolWindowPanel.SELECTED_WORKTREE)
 
         ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Loading branches...", true) {
             private lateinit var availableBranches: List<String>
             private lateinit var allBranches: List<String>
+            private var defaultBranchName: String? = null
 
             override fun run(indicator: ProgressIndicator) {
                 val service = GitWorktreeService.getInstance(project)
                 availableBranches = service.getAvailableBranches()
                 allBranches = service.getAllBranches()
+                defaultBranchName = service.getDefaultBranchName()
             }
 
             override fun onSuccess() {
-                val dialog = CreateWorktreeDialog(project, availableBranches, allBranches)
+                val defaultBaseBranch = selectedWorktree?.branchName ?: defaultBranchName
+                val dialog = CreateWorktreeDialog(project, availableBranches, allBranches, defaultBaseBranch)
                 if (!dialog.showAndGet()) return
 
                 val path = dialog.worktreePath

@@ -21,6 +21,7 @@ class CreateWorktreeDialog(
     private val project: Project,
     private val availableBranches: List<String>,
     private val allBranches: List<String>,
+    private val defaultBaseBranch: String? = null,
 ) : DialogWrapper(project) {
 
     var worktreePath: String = ""
@@ -55,8 +56,10 @@ class CreateWorktreeDialog(
         if (availableBranches.isNotEmpty()) {
             selectedExistingBranch = availableBranches.first()
         }
-        if (allBranches.isNotEmpty()) {
-            baseBranch = allBranches.first()
+        baseBranch = when {
+            defaultBaseBranch != null && defaultBaseBranch in allBranches -> defaultBaseBranch
+            defaultBaseBranch != null && "origin/$defaultBaseBranch" in allBranches -> "origin/$defaultBaseBranch"
+            else -> allBranches.firstOrNull()
         }
 
         pathField = settings.state.defaultWorktreeDirectory ?: ""
@@ -102,6 +105,7 @@ class CreateWorktreeDialog(
             comboBox(allBranches)
                 .align(AlignX.FILL)
                 .onChanged { baseBranch = it.item as? String }
+                .also { cell -> baseBranch?.let { cell.component.selectedItem = it } }
         }.visibleIf(createNewBranchProperty)
 
         row("Existing branch:") {
